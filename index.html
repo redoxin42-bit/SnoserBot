@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liquid Glass Mini App</title>
+    <style>
+        :root {
+            --bg-color: #0a0f1d;
+            --glass-bg: rgba(20, 30, 55, 0.3);
+            --glass-border: rgba(0, 191, 255, 0.25);
+            --glow-color: rgba(0, 191, 255, 0.6);
+            --text-main: #e2f1ff;
+            --text-accent: #00bfff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Декоративные жидкие сферы на фоне */
+        .bg-glow-1 {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(0, 119, 255, 0.4) 0%, transparent 70%);
+            top: -50px;
+            left: -50px;
+            z-index: 1;
+            filter: blur(40px);
+            animation: floatShape 8s ease-in-out infinite alternate;
+        }
+
+        .bg-glow-2 {
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(0, 238, 255, 0.3) 0%, transparent 70%);
+            bottom: 50px;
+            right: -50px;
+            z-index: 1;
+            filter: blur(50px);
+            animation: floatShape 6s ease-in-out infinite alternate-reverse;
+        }
+
+        @keyframes floatShape {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(20px) scale(1.1); }
+        }
+
+        /* Основной контейнер приложения */
+        .app-container {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 420px;
+            height: 100vh;
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            overflow-y: auto;
+        }
+
+        /* Стили профиля */
+        .profile-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(200, 235, 255, 0.1);
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.1);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .avatar-placeholder {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0055ff, #00e5ff);
+            box-shadow: 0 0 10px var(--glow-color);
+        }
+
+        .username {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .sub-status {
+            font-size: 0.85rem;
+            color: #8ab4f8;
+        }
+
+        .days-count {
+            color: var(--text-accent);
+            font-weight: bold;
+        }
+
+        /* Контентная зона */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: var(--text-accent);
+            text-shadow: 0 0 8px rgba(0, 191, 255, 0.4);
+        }
+
+        /* Жидкие интерактивные кнопки */
+        .liquid-btn {
+            position: relative;
+            background: linear-gradient(135deg, rgba(0, 191, 255, 0.1), rgba(0, 85, 255, 0.1));
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 16px;
+            color: var(--text-main);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.15), 0 4px 15px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .liquid-btn:hover, .liquid-btn:active {
+            background: linear-gradient(135deg, rgba(0, 191, 255, 0.25), rgba(0, 85, 255, 0.25));
+            border-color: rgba(0, 191, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px var(--glow-color), inset 0 1px 2px rgba(255, 255, 255, 0.3);
+            color: #fff;
+        }
+
+        .liquid-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transition: 0.5s;
+        }
+
+        .liquid-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Анимированная навигационная панель Liquid Glass */
+        .nav-bar {
+            background: rgba(10, 20, 40, 0.5);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 8px;
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.1), 0 8px 20px rgba(0,0,0,0.4);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #7a8fa9;
+            font-size: 0.75rem;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 12px;
+            transition: all 0.25s ease;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .nav-item.active {
+            color: var(--text-accent);
+            background: rgba(0, 191, 255, 0.1);
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.1), 0 0 10px rgba(0, 191, 255, 0.2);
+            text-shadow: 0 0 5px rgba(0, 191, 255, 0.3);
+        }
+
+        .nav-item:hover:not(.active) {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-icon {
+            font-size: 1.3rem;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow-1"></div>
+    <div class="bg-glow-2"></div>
+
+    <div class="app-container">
+        
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="avatar-placeholder"></div>
+                <div>
+                    <div class="username" id="user-display">@username</div>
+                    <div class="sub-status">Подписка: <span class="days-count">30 дней</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <h2 class="section-title">Панель управления</h2>
+            
+            <div class="liquid-btn" onclick="triggerAction('Разрыв сессий')">⚡ Завершить сессии</div>
+            <div class="liquid-btn" onclick="triggerAction('Очистка каналов')">🗑 Очистить каналы</div>
+            <div class="liquid-btn" onclick="triggerAction('Сброс настроек')">🔄 Полный сброс</div>
+        </div>
+
+        <nav class="nav-bar">
+            <div class="nav-item active" onclick="switchTab(this)">
+                <span class="nav-icon">🛡</span>
+                <span>Главная</span>
+            </div>
+            <div class="nav-item" onclick="switchTab(this)">
+                <span class="nav-icon">💎</span>
+                <span>Тарифы</span>
+            </div>
+            <div class="nav-item" onclick="switchTab(this)">
+                <span class="nav-icon">👤</span>
+                <span>Профиль</span>
+            </div>
+        </nav>
+
+    </div>
+
+    <script>
+        // Инициализация данных из Telegram WebApp API, если запущено внутри Telegram
+        if (window.Telegram && window.Telegram.WebApp) {
+            const webapp = window.Telegram.WebApp;
+            webapp.ready();
+            webapp.expand();
+            
+            const user = webapp.initDataUnsafe?.user;
+            if (user && user.username) {
+                document.getElementById('user-display').innerText = '@' + user.username;
+            }
+        }
+
+        function switchTab(element) {
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        function triggerAction(actionName) {
+            // Легкая вибрация на смартфонах при клике
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
+                window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+            }
+            alert('Действие запущено: ' + actionName);
+        }
+    </script>
+</body>
+</html>
